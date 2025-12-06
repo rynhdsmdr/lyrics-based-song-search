@@ -61,14 +61,3 @@ python app.py
 Buka di browser:
 
 http://localhost:5000
-
-📁 Struktur Proyek (contoh)
-ambatusing/
-│── static/
-│   ├── css/
-│── templates/
-│   ├── index.html
-│   ├── result.html
-│── app.py
-│── requirements.txt
-│── README.md
