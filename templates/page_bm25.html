@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>BM25 Search</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="container">
+
+    <h1>BM25 Search Results</h1>
+
+    <form method="POST">
+        <input type="text" name="query" placeholder="Masukkan potongan lirik..."
+               value="{{ query }}" required>
+        <button type="submit">Cari</button>
+    </form>
+
+    {% set valid_results = results | selectattr("score", ">", 0) | list %}
+
+    {% if valid_results|length == 0 and query %}
+        <div class="not-found">
+            <img src="{{ url_for('static', filename='images/notfound.png') }}" alt="no result">
+            <p>Lagu tidak ditemukan</p>
+        </div>
+    {% endif %}
+
+    {% if valid_results %}
+        <div class="results">
+            {% for r in valid_results %}
+                {% set cover = r.image_url if r.image_url else url_for('static', filename='images/no-cover.png') %}
+                <div class="card">
+                    <img src="{{ cover }}" alt="cover">
+                    <div class="info">
+                        <h3>{{ r.title }}</h3>
+                        <p>{{ r.artist }}</p>
+                        <a href="{{ r.genius_url }}" target="_blank" class="lyrics-link">Lihat Lirik</a>
+                        <span class="score">Score: {{ "%.4f"|format(r.score) }}</span>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <a class="next-button" href="{{ url_for('tfidf_page', q=query) }}">Next →</a>
+
+</div>
+
+</body>
+</html>

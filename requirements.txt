@@ -1,0 +1,12 @@
+bs4
+flask
+requests
+os 
+csv
+re 
+langdetect
+sastrawi
+nltk
+pandas
+skicit-learn
+rank_bm25
