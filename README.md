@@ -44,8 +44,8 @@ Flask – backend dan routing aplikasi
 
 Clone repository:
 
-git clone https://github.com/username/ambatusing.git
-cd ambatusing
+git clone https://github.com/rynhdsmdr/lyrics-based-song-search.git
+cd lyrics-based-song-search
 
 
 Install dependencies:
