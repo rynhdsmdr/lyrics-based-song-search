@@ -1,12 +1,9 @@
 bs4
 flask
 requests
-os 
-csv
-re 
 langdetect
 sastrawi
 nltk
 pandas
-skicit-learn
+scikit-learn
 rank_bm25
