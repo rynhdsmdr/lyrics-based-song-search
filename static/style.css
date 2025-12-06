@@ -10,12 +10,35 @@ body {
     margin: auto;
 }
 
-h1 {
-    font-size: 32px;
+/* ===========================
+   HEADER + BUTTON
+   =========================== */
+.results-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 15px;
+}
+
+.results-header h1 {
+    font-size: 32px;
+    margin: 0;
     font-weight: 700;
 }
 
+.swap-button {
+    padding: 12px 20px;
+    background: #4e5eff;
+    color: white;
+    font-weight: bold;
+    text-decoration: none;
+    border-radius: 10px;
+    transition: 0.2s;
+}
+
+/* ===========================
+   FORM
+   =========================== */
 form {
     margin-bottom: 25px;
     display: flex;
@@ -45,20 +68,28 @@ button:hover {
     background: #2d3bff;
 }
 
-/* Grid */
+/* ===========================
+   GRID RESULTS
+   =========================== */
 .results {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     gap: 20px;
 }
 
-/* Card */
+/* ===========================
+   CARD (MODIFIED → konsisten)
+   =========================== */
 .card {
     background: white;
     border-radius: 15px;
     box-shadow: 0 4px 10px rgb(0 0 0 / 8%);
     overflow: hidden;
     transition: 0.25s;
+
+    /* PERBAIKAN → tinggi stabil */
+    display: flex;
+    flex-direction: column;
 }
 
 .card:hover {
@@ -72,14 +103,28 @@ button:hover {
     object-fit: cover;
 }
 
-/* Info */
+/* ===========================
+   INFO SECTION (MODIFIED)
+   =========================== */
 .info {
     padding: 15px;
+
+    /* PERBAIKAN → isi kartu selalu rapih */
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    justify-content: space-between;
 }
 
+/* tinggi minimum agar judul/penyanyi tidak bikin layout goyang */
 .info h3 {
     margin: 5px 0 3px 0;
     font-size: 19px;
+    min-height: 24px;
+}
+
+.info p {
+    min-height: 20px;
 }
 
 .lyrics-link {
@@ -95,27 +140,9 @@ button:hover {
     color: #666;
 }
 
-/* Buttons */
-.next-button, .back-button {
-    display: inline-block;
-    margin-top: 25px;
-    padding: 12px 20px;
-    background: #4e5eff;
-    color: white;
-    font-weight: bold;
-    text-decoration: none;
-    border-radius: 10px;
-    transition: 0.2s;
-}
-
-.next-button:hover, .back-button:hover {
-    background: #2e3bff;
-}
-
 /* ===========================
-   404 / TIDAK DITEMUKAN
+   NOT FOUND
    =========================== */
-
 .not-found {
     text-align: center;
     padding: 60px 20px;
@@ -134,7 +161,7 @@ button:hover {
     color: #444;
 }
 
-/* Animasi halus */
+/* Animasi */
 .fade-in {
     animation: fade 0.4s ease-in-out;
 }
