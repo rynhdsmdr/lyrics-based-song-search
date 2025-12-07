@@ -2,13 +2,13 @@ import csv
 from preprocess import preprocess
 
 input_file = "dataset/lyrics_dataset.csv"         # CSV asli
-output_file = "dataset/tes.csv"      # CSV hasil preprocessing
+output_file = "dataset/search_dataset.csv"      # CSV hasil preprocessing
 
 with open(input_file, "r", encoding="utf-8") as f_in, \
      open(output_file, "w", encoding="utf-8", newline="") as f_out:
 
     reader = csv.DictReader(f_in)
-    fieldnames = ["artist", "title", "processed_lyrics", "image_url", "genius_url"]
+    fieldnames = ["artist", "title", "lyrics_clean", "image_url", "genius_url"]
 
     writer = csv.DictWriter(f_out, fieldnames=fieldnames)
     writer.writeheader()

@@ -19,7 +19,7 @@ remove_words = {
     "contributors", "contributor", "lirik", "lyrics", "lyric",
     "penulis", "verse", "chorus", "bridge",
     "produced", "written", "copyright",
-    "translated", "song", "refrain"
+    "translated", "song", "refrain", "translations"
 }
 
 def remove_custom_words(text):
@@ -39,35 +39,34 @@ def remove_header(text, title, artist):
     # Angka pembuka "11 monokrom"
     text = re.sub(r"^\s*\d+\s+", " ", text)
 
-    # Hapus judul di awal & tengah
-    text = re.sub(rf"^{title}\b", " ", text)
-    text = re.sub(rf"\b{title}\b", " ", text)
+    # Hapus judul & artis di awal
+    if title:
+        text = re.sub(rf"^{title}\b", " ", text)
+        text = re.sub(rf"\b{title}\b", " ", text)
+        text = re.sub(rf"{title}\s+lyrics", " ", text)
 
-    # Hapus "judul lyrics"
-    text = re.sub(rf"{title}\s+lyrics", " ", text)
-
-    # Hapus artis
-    text = re.sub(rf"^{artist}\b", " ", text)
-    text = re.sub(rf"\b{artist}\b", " ", text)
+    if artist:
+        text = re.sub(rf"^{artist}\b", " ", text)
+        text = re.sub(rf"\b{artist}\b", " ", text)
 
     return text
 
 
 # ============================================================
-# NORMALISASI SLANG
+# NORMALISASI SLANG (lebih aman)
 # ============================================================
 slang_map = {
-    "gak": "tidak",
-    "ga": "tidak",
-    "gk": "tidak",
-    "ngga": "tidak",
-    "nggak": "tidak",
-    "tdk": "tidak"
+    r"\bgak\b": "tidak",
+    r"\bga\b": "tidak",
+    r"\bgk\b": "tidak",
+    r"\bngga\b": "tidak",
+    r"\bnggak\b": "tidak",
+    r"\btdk\b": "tidak"
 }
 
 def normalize_slang(text):
     for slang, correct in slang_map.items():
-        text = text.replace(slang, correct)
+        text = re.sub(slang, correct, text)
     return text
 
 
@@ -104,7 +103,7 @@ def clean_text(text, title="", artist=""):
     # normalisasi slang
     text = normalize_slang(text)
 
-    # hapus angka section "1", "2", "3"
+    # hapus angka
     text = re.sub(r"\b\d+\b", " ", text)
 
     # hapus simbol
@@ -126,7 +125,7 @@ def lemmatize_english(text):
 
 
 # ============================================================
-# FINAL PREPROCESS
+# FINAL PREPROCESS (versi sangat stabil)
 # ============================================================
 def preprocess(text, title="", artist=""):
     text = clean_text(text, title, artist)
@@ -134,11 +133,19 @@ def preprocess(text, title="", artist=""):
     if not text.strip():
         return ""
 
+    # --- Deteksi Bahasa dengan fallback ---
     try:
         lang = detect(text)
     except:
         lang = "unknown"
 
+    # --- Override untuk kasus Indonesia ---
+    indo_keywords = ["aku", "engkau", "kau", "kamu", "tidak", "lagi", "yang", "ini", "itu"]
+
+    if lang == "en" and any(w in text.split() for w in indo_keywords):
+        lang = "id"
+
+    # --- Preprocessing final ---
     if lang == "id":
         return stem_id.stem(text)
     else:
