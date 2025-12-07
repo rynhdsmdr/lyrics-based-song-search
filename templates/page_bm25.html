@@ -3,30 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <title>BM25 Search</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 
 <div class="container">
 
-    <!-- Header + tombol NEXT di kanan -->
     <div class="results-header">
         <h1>BM25 Search Results</h1>
-        <a class="swap-button" href="{{ url_for('tfidf_page', q=query) }}">Ganti Algoritma  <i class="fa-solid fa-arrows-rotate"></i></a>
+        <a class="swap-button" href="{{ url_for('tfidf_page', q=query) }}">
+            Ganti Algoritma <i class="fa-solid fa-arrows-rotate"></i>
+        </a>
     </div>
 
-    <!-- Search bar -->
     <form method="POST">
         <input type="text" name="query" placeholder="Masukkan potongan lirik..."
                value="{{ query }}" required>
         <button type="submit">Cari</button>
     </form>
 
-    <!-- Filter hasil yang score > 0 -->
     {% set valid_results = results | selectattr("score", ">", 0) | list %}
 
-    <!-- Jika tidak ada hasil -->
     {% if valid_results|length == 0 and query %}
         <div class="not-found">
             <img src="{{ url_for('static', filename='images/notfound.png') }}" alt="no result">
@@ -34,7 +32,6 @@
         </div>
     {% endif %}
 
-    <!-- Jika hasil ditemukan -->
     {% if valid_results %}
         <div class="results fade-in">
             {% for r in valid_results %}
@@ -44,6 +41,11 @@
                     <div class="info">
                         <h3>{{ r.title }}</h3>
                         <p>{{ r.artist }}</p>
+
+                        <div class="lyrics-preview">
+                            {{ r.snippet | safe }}
+                        </div>
+
                         <a href="{{ r.genius_url }}" target="_blank" class="lyrics-link">Lihat Lirik</a>
                         <span class="score">Score: {{ "%.4f"|format(r.score) }}</span>
                     </div>

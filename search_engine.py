@@ -8,7 +8,7 @@ import numpy as np
 # LOAD RAW & CLEAN DATASET
 # =============================
 df_raw = pd.read_csv("dataset/lyrics_dataset.csv")      # artist,title,lyrics,image_url,genius_url
-df_clean = pd.read_csv("dataset/songs_processed.csv")  # artist,title,image_url,genius_url,lyrics_clean
+df_clean = pd.read_csv("dataset/tes.csv")  # artist,title,image_url,genius_url,lyrics_clean
 
 df_clean['lyrics_clean'] = df_clean['lyrics_clean'].fillna("")
 df_raw['lyrics'] = df_raw['lyrics'].fillna("")

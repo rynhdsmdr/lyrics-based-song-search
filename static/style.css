@@ -61,11 +61,6 @@ button {
     border-radius: 10px;
     cursor: pointer;
     font-weight: 600;
-    transition: 0.2s;
-}
-
-button:hover {
-    background: #2d3bff;
 }
 
 /* ===========================
@@ -78,7 +73,7 @@ button:hover {
 }
 
 /* ===========================
-   CARD (MODIFIED → konsisten)
+   CARD
    =========================== */
 .card {
     background: white;
@@ -86,15 +81,8 @@ button:hover {
     box-shadow: 0 4px 10px rgb(0 0 0 / 8%);
     overflow: hidden;
     transition: 0.25s;
-
-    /* PERBAIKAN → tinggi stabil */
     display: flex;
     flex-direction: column;
-}
-
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgb(0 0 0 / 15%);
 }
 
 .card img {
@@ -103,41 +91,37 @@ button:hover {
     object-fit: cover;
 }
 
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgb(0 0 0 / 15%);
+}
+
 /* ===========================
-   INFO SECTION (MODIFIED)
+   INFO
    =========================== */
 .info {
     padding: 15px;
-
-    /* PERBAIKAN → isi kartu selalu rapih */
     display: flex;
     flex-direction: column;
     flex: 1;
     justify-content: space-between;
 }
 
-/* tinggi minimum agar judul/penyanyi tidak bikin layout goyang */
-.info h3 {
-    margin: 5px 0 3px 0;
-    font-size: 19px;
-    min-height: 24px;
-}
-
-.info p {
-    min-height: 20px;
-}
-
-.lyrics-link {
-    font-weight: bold;
-    text-decoration: none;
-    color: #1e2bff;
-}
-
-.score {
-    display: block;
-    margin-top: 5px;
+.lyrics-preview {
+    margin-top: 10px;
     font-size: 14px;
-    color: #666;
+    color: #333;
+    background: #eef1ff;
+    padding: 10px;
+    border-radius: 10px;
+    line-height: 1.4;
+    min-height: 60px;
+}
+
+.highlight {
+    background: yellow;
+    padding: 0 3px;
+    font-weight: bold;
 }
 
 /* ===========================
@@ -152,13 +136,6 @@ button:hover {
 .not-found img {
     width: 220px;
     margin-bottom: 15px;
-    opacity: 0.9;
-}
-
-.not-found p {
-    font-size: 22px;
-    font-weight: 700;
-    color: #444;
 }
 
 /* Animasi */
