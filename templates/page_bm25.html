@@ -2,59 +2,970 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>BM25 Search</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LyricFinder - Search Engine</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #F5F7FA;
+            color: #1a1a1a;
+            line-height: 1.6;
+        }
+
+        /* Navbar */
+        .navbar {
+            background: white;
+            padding: 1.2rem 0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            text-decoration: none;
+            color: #1a1a1a;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: #4F46E5;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.1rem;
+        }
+
+        .logo-text {
+            font-size: 1.4rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .algo-badge {
+            background: #EEF2FF;
+            color: #4F46E5;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .switch-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: white;
+            border: 1.5px solid #E5E7EB;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            color: #6B7280;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .switch-btn:hover {
+            border-color: #4F46E5;
+            color: #4F46E5;
+            background: #F9FAFB;
+        }
+
+        /* Hero Section */
+        .hero-section {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 5rem 2rem 4rem;
+            text-align: center;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: #1a1a1a;
+            margin-bottom: 1.2rem;
+            letter-spacing: -1.5px;
+            line-height: 1.1;
+        }
+
+        .hero-highlight {
+            color: #4F46E5;
+            position: relative;
+        }
+
+        .hero-subtitle {
+            font-size: 1.15rem;
+            color: #6B7280;
+            margin-bottom: 3rem;
+            font-weight: 400;
+        }
+
+        /* Search Box */
+        .search-form {
+            max-width: 650px;
+            margin: 0 auto 3rem;
+        }
+
+        .search-wrapper {
+            position: relative;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 10px 15px -3px rgba(0,0,0,0.08);
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 1.2rem;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .search-wrapper:focus-within {
+            border-color: #4F46E5;
+            box-shadow: 0 4px 6px -1px rgba(79,70,229,0.1), 0 10px 15px -3px rgba(79,70,229,0.15);
+        }
+
+        .search-icon {
+            color: #9CA3AF;
+            font-size: 1.2rem;
+            margin-right: 0.8rem;
+        }
+
+        .search-wrapper:focus-within .search-icon {
+            color: #4F46E5;
+        }
+
+        .search-input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 1rem;
+            color: #1a1a1a;
+            background: transparent;
+        }
+
+        .search-input::placeholder {
+            color: #9CA3AF;
+        }
+
+        .search-btn {
+            background: #4F46E5;
+            color: white;
+            border: none;
+            padding: 0.7rem 1.8rem;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-left: 0.5rem;
+        }
+
+        .search-btn:hover {
+            background: #4338CA;
+            transform: translateY(-1px);
+        }
+
+        .search-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Categories Section */
+        .categories-section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem 4rem;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+        .section-subtitle {
+            color: #6B7280;
+            font-size: 0.95rem;
+            margin-top: 0.3rem;
+        }
+
+        .view-all-link {
+            color: #4F46E5;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            transition: all 0.2s;
+        }
+
+        .view-all-link:hover {
+            gap: 0.5rem;
+        }
+
+        /* Category Cards */
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 1.2rem;
+            margin-bottom: 3rem;
+        }
+
+        .category-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            border: 1px solid #F3F4F6;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .category-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px -4px rgba(0,0,0,0.1);
+            border-color: #E5E7EB;
+        }
+
+        .category-icon {
+            width: 56px;
+            height: 56px;
+            background: #F3F4F6;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 1.5rem;
+            transition: all 0.2s;
+        }
+
+        .category-card:hover .category-icon {
+            background: #4F46E5;
+            color: white;
+        }
+
+        .category-name {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 0.4rem;
+        }
+
+        .category-count {
+            font-size: 0.85rem;
+            color: #6B7280;
+        }
+
+        /* Featured Songs Section */
+        .featured-section {
+            margin-top: 4rem;
+        }
+
+        .featured-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .featured-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #F3F4F6;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .featured-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px -4px rgba(0,0,0,0.1);
+        }
+
+        .featured-image {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .featured-content {
+            padding: 1.2rem;
+        }
+
+        .featured-tag {
+            display: inline-block;
+            background: #EEF2FF;
+            color: #4F46E5;
+            padding: 0.3rem 0.7rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+        }
+
+        .featured-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 0.4rem;
+        }
+
+        .featured-artist {
+            font-size: 0.85rem;
+            color: #6B7280;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .featured-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 0.8rem;
+            border-top: 1px solid #F3F4F6;
+        }
+
+        .featured-genre {
+            font-size: 0.8rem;
+            color: #6B7280;
+        }
+
+        .featured-plays {
+            font-size: 0.8rem;
+            color: #4F46E5;
+            font-weight: 600;
+        }
+
+        /* Results Container */
+        .results-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem 4rem;
+        }
+
+        .results-header {
+            margin-bottom: 2rem;
+        }
+
+        .results-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .tab {
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            background: white;
+            border: none;
+            color: #6B7280;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tab.active {
+            background: #4F46E5;
+            color: white;
+        }
+
+        .results-info {
+            color: #6B7280;
+            font-size: 0.95rem;
+        }
+
+        /* Not Found */
+        .not-found {
+            background: white;
+            border-radius: 16px;
+            padding: 4rem 2rem;
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .not-found-icon {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 2rem;
+            background: linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .not-found-icon i {
+            font-size: 3.5rem;
+            color: #4F46E5;
+            opacity: 0.7;
+        }
+
+        .not-found-icon::before {
+            content: '';
+            position: absolute;
+            width: 140px;
+            height: 140px;
+            border: 2px dashed #C7D2FE;
+            border-radius: 50%;
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .not-found img {
+            max-width: 250px;
+            margin-bottom: 2rem;
+            opacity: 0.7;
+        }
+
+        .not-found-title {
+            font-size: 1.5rem;
+            color: #1a1a1a;
+            font-weight: 700;
+            margin-bottom: 0.8rem;
+        }
+
+        .not-found-text {
+            font-size: 1rem;
+            color: #6B7280;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .not-found-suggestions {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: flex-start;
+            text-align: left;
+            background: #F9FAFB;
+            padding: 1.5rem 2rem;
+            border-radius: 12px;
+            margin-top: 1rem;
+        }
+
+        .not-found-suggestions h4 {
+            font-size: 0.9rem;
+            color: #1a1a1a;
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .not-found-suggestions ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .not-found-suggestions li {
+            color: #6B7280;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .not-found-suggestions li::before {
+            content: '•';
+            color: #4F46E5;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        /* Results Grid */
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        /* Song Card */
+        .song-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid #F3F4F6;
+            position: relative;
+        }
+
+        .song-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px -8px rgba(0,0,0,0.1);
+            border-color: #E5E7EB;
+        }
+
+        .card-header {
+            position: relative;
+            padding-top: 56.25%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            overflow: hidden;
+        }
+
+        .card-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        .song-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 0.4rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+        }
+
+        .song-artist {
+            color: #6B7280;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .lyrics-snippet {
+            background: #F9FAFB;
+            border-left: 3px solid #4F46E5;
+            padding: 1rem;
+            border-radius: 8px;
+            font-size: 0.88rem;
+            color: #4B5563;
+            line-height: 1.6;
+            margin-bottom: 1.2rem;
+            max-height: 90px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .lyrics-snippet mark {
+            background: #FEF3C7;
+            color: #92400E;
+            padding: 0.1rem 0.25rem;
+            border-radius: 3px;
+            font-weight: 600;
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .lyrics-link {
+            flex: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            background: #4F46E5;
+            color: white;
+            text-decoration: none;
+            padding: 0.65rem 1.2rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .lyrics-link:hover {
+            background: #4338CA;
+            transform: translateY(-1px);
+        }
+
+        .score-tag {
+            background: #EEF2FF;
+            color: #4F46E5;
+            padding: 0.5rem 0.9rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        /* Animation */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeInUp 0.5s ease-out forwards;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1rem;
+            }
+
+            .category-grid {
+                grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            }
+
+            .featured-grid,
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .nav-right {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .search-wrapper {
+                flex-direction: column;
+                gap: 0.8rem;
+            }
+
+            .search-input {
+                width: 100%;
+            }
+
+            .search-btn {
+                width: 100%;
+                margin-left: 0;
+            }
+
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+        }
+    </style>
 </head>
 <body>
 
-<div class="container">
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="#" class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-music"></i>
+                </div>
+                <span class="logo-text">LyricFinder</span>
+            </a>
+            <div class="nav-right">
+                <span class="algo-badge">BM25 Algorithm</span>
+                <a href="{{ url_for('tfidf_page', q=query) }}" class="switch-btn">
+                    <i class="fas fa-repeat"></i>
+                    Switch Algorithm
+                </a>
+            </div>
+        </div>
+    </nav>
 
-    <div class="results-header">
-        <h1>BM25 Search Results</h1>
-        <a class="swap-button" href="{{ url_for('tfidf_page', q=query) }}">
-            Ganti Algoritma <i class="fa-solid fa-arrows-rotate"></i>
-        </a>
-    </div>
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <h1 class="hero-title">
+            Temukan <span class="hero-highlight">Lagu Favoritmu</span>
+        </h1>
+        <p class="hero-subtitle">
+            Kalau lagi nyari lirik, kami bantu kamu nemuin yang pas sesuai yang kamu cari.
+        </p>
 
-    <form method="POST">
-        <input type="text" name="query" placeholder="Masukkan potongan lirik..."
-               value="{{ query }}" required>
-        <button type="submit">Cari</button>
-    </form>
+        <!-- Search Form -->
+        <form method="POST" class="search-form">
+            <div class="search-wrapper">
+                <i class="fas fa-search search-icon"></i>
+                <input 
+                    type="text" 
+                    name="query" 
+                    class="search-input"
+                    placeholder="Song title or lyrics..." 
+                    value="{{ query }}"
+                    required
+                >
+                <button type="submit" class="search-btn">Search</button>
+            </div>
+        </form>
+    </section>
 
     {% set valid_results = results | selectattr("score", ">", 0) | list %}
 
-    {% if valid_results|length == 0 and query %}
-        <div class="not-found">
-            <img src="{{ url_for('static', filename='images/notfound.png') }}" alt="no result">
-            <p>Lagu tidak ditemukan</p>
+    <!-- Categories & Featured Section (Only show when no search) -->
+    {% if not query %}
+    <div class="categories-section">
+        <!-- Search by Genre -->
+        <div class="section-header">
+            <div>
+                <h2 class="section-title">Search by Genre</h2>
+                <p class="section-subtitle">Explore Indonesian music by your favorite genre</p>
+            </div>
+            <a href="#" class="view-all-link">
+                All Genres <i class="fas fa-arrow-right"></i>
+            </a>
         </div>
+
+        <div class="category-grid fade-in">
+            <div class="category-card">
+                <div class="category-icon">
+                    <i class="fas fa-guitar"></i>
+                </div>
+                <div class="category-name">Pop</div>
+                <div class="category-count">250+ songs</div>
+            </div>
+
+            <div class="category-card">
+                <div class="category-icon">
+                    <i class="fas fa-microphone"></i>
+                </div>
+                <div class="category-name">Rock</div>
+                <div class="category-count">180+ songs</div>
+            </div>
+
+            <div class="category-card">
+                <div class="category-icon">
+                    <i class="fas fa-heart"></i>
+                </div>
+                <div class="category-name">Ballad</div>
+                <div class="category-count">320+ songs</div>
+            </div>
+
+            <div class="category-card">
+                <div class="category-icon">
+                    <i class="fas fa-drum"></i>
+                </div>
+                <div class="category-name">Indie</div>
+                <div class="category-count">150+ songs</div>
+            </div>
+
+            <div class="category-card">
+                <div class="category-icon">
+                    <i class="fas fa-compact-disc"></i>
+                </div>
+                <div class="category-name">Jazz</div>
+                <div class="category-count">95+ songs</div>
+            </div>
+
+            <div class="category-card">
+                <div class="category-icon">
+                    <i class="fas fa-music"></i>
+                </div>
+                <div class="category-name">Dangdut</div>
+                <div class="category-count">200+ songs</div>
+            </div>
+        </div>
+
+        <!-- Top Indonesian Songs -->
+        <div class="featured-section">
+            <div class="section-header">
+                <div>
+                    <h2 class="section-title">Top Indonesian Songs</h2>
+                    <p class="section-subtitle">Most searched lyrics in Indonesia</p>
+                </div>
+                <a href="#" class="view-all-link">
+                    View All <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <div class="featured-grid fade-in">
+                <div class="featured-card">
+                    <div class="featured-image" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-music" style="font-size: 3rem; color: rgba(255,255,255,0.3);"></i>
+                    </div>
+                    <div class="featured-content">
+                        <span class="featured-tag">Trending</span>
+                        <h3 class="featured-title">Menunggu Kamu</h3>
+                        <p class="featured-artist">
+                            <i class="fas fa-user"></i>
+                            Anji
+                        </p>
+                        <div class="featured-meta">
+                            <span class="featured-genre">Pop</span>
+                            <span class="featured-plays">15K searches</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="featured-card">
+                    <div class="featured-image" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-heart" style="font-size: 3rem; color: rgba(255,255,255,0.3);"></i>
+                    </div>
+                    <div class="featured-content">
+                        <span class="featured-tag">Popular</span>
+                        <h3 class="featured-title">Lagu Untuk Mama</h3>
+                        <p class="featured-artist">
+                            <i class="fas fa-user"></i>
+                            Tulus
+                        </p>
+                        <div class="featured-meta">
+                            <span class="featured-genre">Ballad</span>
+                            <span class="featured-plays">12K searches</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="featured-card">
+                    <div class="featured-image" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-guitar" style="font-size: 3rem; color: rgba(255,255,255,0.3);"></i>
+                    </div>
+                    <div class="featured-content">
+                        <span class="featured-tag">New</span>
+                        <h3 class="featured-title">Hampir Semua</h3>
+                        <p class="featured-artist">
+                            <i class="fas fa-user"></i>
+                            Sheila On 7
+                        </p>
+                        <div class="featured-meta">
+                            <span class="featured-genre">Pop Rock</span>
+                            <span class="featured-plays">10K searches</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="featured-card">
+                    <div class="featured-image" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-star" style="font-size: 3rem; color: rgba(255,255,255,0.3);"></i>
+                    </div>
+                    <div class="featured-content">
+                        <span class="featured-tag">Classic</span>
+                        <h3 class="featured-title">Karena Ku Sanggup</h3>
+                        <p class="featured-artist">
+                            <i class="fas fa-user"></i>
+                            Ariel Noah
+                        </p>
+                        <div class="featured-meta">
+                            <span class="featured-genre">Pop</span>
+                            <span class="featured-plays">18K searches</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     {% endif %}
 
-    {% if valid_results %}
-        <div class="results fade-in">
-            {% for r in valid_results %}
-                {% set cover = r.image_url if r.image_url else url_for('static', filename='images/no-cover.png') %}
-                <div class="card">
-                    <img src="{{ cover }}" alt="cover">
-                    <div class="info">
-                        <h3>{{ r.title }}</h3>
-                        <p>{{ r.artist }}</p>
+    <!-- Results Section -->
+    <div class="results-container">
+        {% if query %}
+            <!-- Results Header -->
+            {% if valid_results|length > 0 %}
+            <div class="results-header fade-in">
+                <div class="results-tabs">
+                    <button class="tab active">All Results</button>
+                </div>
+                <p class="results-info">Showing {{ valid_results|length }} result(s) for "{{ query }}"</p>
+            </div>
+            {% endif %}
 
-                        <div class="lyrics-preview">
+            <!-- Not Found State -->
+            {% if valid_results|length == 0 %}
+            <div class="not-found fade-in">
+                <img src="{{ url_for('static', filename='images/notfound.png') }}" alt="No results">
+                <p class="not-found-text">No songs found. Try different keywords.</p>
+            </div>
+            {% endif %}
+
+            <!-- Results Grid -->
+            {% if valid_results|length > 0 %}
+            <div class="results-grid">
+                {% for r in valid_results %}
+                {% set cover = r.image_url if r.image_url else url_for('static', filename='images/no-cover.png') %}
+                <div class="song-card fade-in" style="animation-delay: {{ loop.index0 * 0.05 }}s">
+                    <div class="card-header">
+                        <img src="{{ cover }}" alt="{{ r.title }}" class="card-image">
+                    </div>
+                    <div class="card-body">
+                        <h3 class="song-title">{{ r.title }}</h3>
+                        <p class="song-artist">
+                            <i class="fas fa-user-music"></i>
+                            {{ r.artist }}
+                        </p>
+                        
+                        <div class="lyrics-snippet">
                             {{ r.snippet | safe }}
                         </div>
 
-                        <a href="{{ r.genius_url }}" target="_blank" class="lyrics-link">Lihat Lirik</a>
-                        <span class="score">Score: {{ "%.4f"|format(r.score) }}</span>
+                        <div class="card-footer">
+                            <a href="{{ r.genius_url }}" target="_blank" class="lyrics-link">
+                                View Lyrics
+                                <i class="fas fa-arrow-up-right-from-square"></i>
+                            </a>
+                            <span class="score-tag">{{ "%.3f"|format(r.score) }}</span>
+                        </div>
                     </div>
                 </div>
-            {% endfor %}
-        </div>
-    {% endif %}
-
-</div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        {% endif %}
+    </div>
 
 </body>
 </html>
